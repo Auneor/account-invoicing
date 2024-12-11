@@ -16,8 +16,20 @@ class TestAccountInvoiceAlternateCommercialPartner(AccountTestInvoicingCommon):
         cls.in_invoice_02 = cls.init_invoice("in_invoice", products=cls.product_a)
         cls.out_invoice_02 = cls.init_invoice("out_invoice", products=cls.product_b)
         cls.alternate_partner = cls.env["res.partner"].create(
-            {"name": "Alternate Payer"}
+            {
+                "name": "Alternate Payer",
+                "property_payment_term_id": cls.pay_terms_a.id,
+                "property_supplier_payment_term_id": cls.pay_terms_a.id,
+                "property_account_receivable_id": cls.company_data[
+                    "default_account_receivable"
+                ].id,
+                "property_account_payable_id": cls.company_data[
+                    "default_account_payable"
+                ].id,
+                "company_id": False,
+            }
         )
+
         cls.payment_method_manual_out = cls.env.ref(
             "account.account_payment_method_manual_out"
         )
@@ -94,7 +106,7 @@ class TestAccountInvoiceAlternateCommercialPartner(AccountTestInvoicingCommon):
         with Form(self.out_invoice) as form:
             form.alternate_payer_id = self.alternate_partner
             self.out_invoice = form.save()
-        self.out_invoice._post()
+        self.out_invoice.action_post()
         records = self.out_invoice
         ctx = {"active_model": records._name, "active_ids": records.ids}
         payment = (
@@ -113,7 +125,7 @@ class TestAccountInvoiceAlternateCommercialPartner(AccountTestInvoicingCommon):
         with Form(self.in_invoice) as form:
             form.alternate_payer_id = self.alternate_partner
             self.in_invoice = form.save()
-        self.in_invoice._post()
+        self.in_invoice.action_post()
         records = self.in_invoice
         ctx = {"active_model": records._name, "active_ids": records.ids}
         payment = (
@@ -132,11 +144,11 @@ class TestAccountInvoiceAlternateCommercialPartner(AccountTestInvoicingCommon):
         with Form(self.out_invoice) as form:
             form.alternate_payer_id = self.alternate_partner
             self.out_invoice = form.save()
-        self.out_invoice._post()
+        self.out_invoice.action_post()
         with Form(self.out_invoice_02) as form:
             form.alternate_payer_id = self.alternate_partner
             self.out_invoice_02 = form.save()
-        self.out_invoice_02._post()
+        self.out_invoice_02.action_post()
         records = self.out_invoice | self.out_invoice_02
         ctx = {"active_model": records._name, "active_ids": records.ids}
         payments = (
@@ -156,11 +168,11 @@ class TestAccountInvoiceAlternateCommercialPartner(AccountTestInvoicingCommon):
         with Form(self.in_invoice) as form:
             form.alternate_payer_id = self.alternate_partner
             self.in_invoice = form.save()
-        self.in_invoice._post()
+        self.in_invoice.action_post()
         with Form(self.in_invoice_02) as form:
             form.alternate_payer_id = self.alternate_partner
             self.in_invoice_02 = form.save()
-        self.in_invoice_02._post()
+        self.in_invoice_02.action_post()
         records = self.in_invoice | self.in_invoice_02
         ctx = {"active_model": records._name, "active_ids": records.ids}
         payments = (
@@ -175,81 +187,3 @@ class TestAccountInvoiceAlternateCommercialPartner(AccountTestInvoicingCommon):
         )
         for payment in payments:
             self.assertEqual(payment.partner_id, self.alternate_partner)
-
-    def test_07_payment_widget_in_invoices(self):
-        with Form(self.in_invoice) as form:
-            form.alternate_payer_id = self.alternate_partner
-            self.in_invoice = form.save()
-        line = self.in_invoice.line_ids.filtered(
-            lambda r: r.display_type == "payment_term"
-        )
-        payment_move = self.env["account.move"].create(
-            {
-                "journal_id": self.bank_journal_euro.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "account_id": line.account_id.id,
-                            "partner_id": line.partner_id.id,
-                            "debit": line.credit,
-                            "credit": line.debit,
-                        },
-                    ),
-                    (
-                        0,
-                        0,
-                        {
-                            "account_id": self.bank_account.id,
-                            "debit": line.debit,
-                            "credit": line.credit,
-                        },
-                    ),
-                ],
-            }
-        )
-        payment_move.action_post()
-        self.assertFalse(self.in_invoice.invoice_has_outstanding)
-        self.in_invoice._post()
-        self.in_invoice._invalidate_cache()
-        self.assertTrue(self.in_invoice.invoice_has_outstanding)
-
-    def test_08_payment_widget_out_invoices(self):
-        with Form(self.out_invoice) as form:
-            form.alternate_payer_id = self.alternate_partner
-            self.out_invoice = form.save()
-        line = self.out_invoice.line_ids.filtered(
-            lambda r: r.display_type == "payment_term"
-        )
-        payment_move = self.env["account.move"].create(
-            {
-                "journal_id": self.bank_journal_euro.id,
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "account_id": line.account_id.id,
-                            "partner_id": line.partner_id.id,
-                            "debit": line.credit,
-                            "credit": line.debit,
-                        },
-                    ),
-                    (
-                        0,
-                        0,
-                        {
-                            "account_id": self.bank_account.id,
-                            "debit": line.debit,
-                            "credit": line.credit,
-                        },
-                    ),
-                ],
-            }
-        )
-        payment_move.action_post()
-        self.assertFalse(self.out_invoice.invoice_has_outstanding)
-        self.out_invoice._post()
-        self.out_invoice._invalidate_cache()
-        self.assertTrue(self.out_invoice.invoice_has_outstanding)

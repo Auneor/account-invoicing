@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-09 13:16+0000\n"
-"PO-Revision-Date: 2024-12-09 13:16+0000\n"
+"POT-Creation-Date: 2024-12-09 13:13+0000\n"
+"PO-Revision-Date: 2024-12-09 13:13+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_invoice_alternate_payer.field_account_move__alternate_payer_id
 #: model:ir.model.fields,field_description:account_invoice_alternate_payer.field_account_payment__alternate_payer_id
 msgid "Alternate Payer"
-msgstr ""
+msgstr "Payeur"
 
 #. module: account_invoice_alternate_payer
 #: model:ir.model.fields,help:account_invoice_alternate_payer.field_account_bank_statement_line__alternate_payer_id
@@ -29,33 +29,34 @@ msgstr ""
 msgid ""
 "If set, this will be the partner that we expect to pay or to be paid by. If "
 "not set, the payor is by default the commercial"
-msgstr ""
+msgstr "S'il est défini, il s'agira du partenaire que nous prévoyons de payer ou par lequel nous prévoyons d'être payés."
+"S'il n'est pas défini, le payeur est par défaut le partenaire commercial."
 
 #. module: account_invoice_alternate_payer
 #: model:ir.model,name:account_invoice_alternate_payer.model_account_move
 msgid "Journal Entry"
-msgstr ""
+msgstr "Pièce comptable"
 
 #. module: account_invoice_alternate_payer
 #: model:ir.model,name:account_invoice_alternate_payer.model_account_move_line
 msgid "Journal Item"
-msgstr ""
+msgstr "Écriture comptable"
 
 #. module: account_invoice_alternate_payer
 #. odoo-python
 #: code:addons/account_invoice_alternate_payer/models/account_move.py:0
 #, python-format
 msgid "Outstanding credits"
-msgstr ""
+msgstr "crédits en circulation"
 
 #. module: account_invoice_alternate_payer
 #. odoo-python
 #: code:addons/account_invoice_alternate_payer/models/account_move.py:0
 #, python-format
 msgid "Outstanding debits"
-msgstr ""
+msgstr "Débits en circulation"
 
 #. module: account_invoice_alternate_payer
 #: model:ir.model,name:account_invoice_alternate_payer.model_account_payment
 msgid "Payments"
-msgstr ""
+msgstr "Paiements"

@@ -71,6 +71,10 @@ Contributors
 
   - Jordi Ballester Alomar <jordi.ballester@eficent.com>
 
+- Auneor Conseil (https://www.auneor-conseil.fr)
+
+  - Alpha Oumar Sandaly DIALLO <alpha.oumar@auneor-conseil.fr>
+
 Maintainers
 -----------
 
