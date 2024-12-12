@@ -150,8 +150,6 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     def write(self, values):
-        # CHECK ME: this change to commercial partner when find difference between main partner
-        # https://github.com/odoo/odoo/blob/16.0/addons/account/models/account_move.py#L3431
         if "partner_id" in values and len(values.keys()) == 1:
             lines_to_skip = self.filtered(
                 lambda x: x.move_id.alternate_payer_id
